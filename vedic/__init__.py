@@ -3,6 +3,11 @@ Vedic Mathematics Library
 Ancient Sutras, Modern Python.
 """
 # Multiply
+from .log_approx import log_approx
+from .proportional_compress import proportional_compress
+from .cube_verify import verify_cube_root
+from .kalana_factor import kalana_factor
+from .yojayet_quad import solve_simultaneous_quadratics
 from .multiply import (
     urdhva_multiply,
     nikhilam_multiply,
@@ -73,3 +78,8 @@ sqrt = vilokanam_sqrt
 cuberoot = vilokanam_cuberoot
 predict = ekadhikena_sequence
 compress = shunyam_compress
+log = log_approx
+proportion_compress = proportional_compress
+cube_verify = verify_cube_root
+kalana = kalana_factor
+yojayet = solve_simultaneous_quadratics
