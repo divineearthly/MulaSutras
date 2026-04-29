@@ -1,7 +1,9 @@
-# File: digit_sum_check.py
+#!/usr/bin/env python3
 def digit_sum(n: int) -> int:
-    s = n % 9
-    return 9 if s == 0 else s
+    """Return the digital root (0-8). For verification, treat 9 as 0."""
+    if n == 0:
+        return 0
+    return n % 9
 
-def verify_multiplication(a, b, product):
-    return digit_sum(a) * digit_sum(b) % 9 == digit_sum(product)
+def verify_multiplication(a: int, b: int, product: int) -> bool:
+    return (digit_sum(a) * digit_sum(b)) % 9 == digit_sum(product)
