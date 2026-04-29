@@ -1,3 +1,5 @@
+from anurupyena import anurupyena_multiply
+from yavadunam import yavadunam_square
 from urdhva_tiryagbhyam import urdhva_multiply
 from nikhilam import nikhilam_multiply
 
