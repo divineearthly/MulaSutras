@@ -5,6 +5,11 @@ Supports: mul, div, square, sqrt, mul9, verify, predict, compress,
           solve2, solve_lin, quadratic, derivative, factor, solve3, proportion
 """
 
+from vilokanam_cube import vilokanam_cuberoot
+from sesanyankena import remainder_by_10_power
+from sopantyadvayamantyam import sin_approx
+from digit_sum_verify_division import verify_division
+from purana_cubic import purana_cubic
 from ekadhikena_series import sum_of_naturals, sum_of_squares, sum_of_cubes
 from recurring_fraction import recurring_to_fraction
 from murti_gunaka import murti_multiply
@@ -69,6 +74,16 @@ def vedic_process(operation, *args):
         return vilokanam_sqrt(args[0])
     elif operation == "mul9":
         return multiply_by_9s(args[0], args[1])
+    elif operation == "cuberoot":
+        return vilokanam_cuberoot(args[0])
+    elif operation == "last_n":
+        return remainder_by_10_power(args[0], args[1])
+    elif operation == "sin":
+        return sin_approx(args[0])
+    elif operation == "verify_div":
+        return verify_division(args[0], args[1], args[2], args[3])
+    elif operation == "cubic":
+        return purana_cubic(args[0], args[1])
     elif operation == "verify":
         return verify_multiplication(args[0], args[1], args[2])
     elif operation == "predict":
@@ -122,7 +137,17 @@ if __name__ == "__main__":
         print("  recur_frac i rep — recurring decimal to fraction")
         print("  murti a b, antyayor a b — special Vedic multiplications")
         print("  tri_area a b c — triangle area")
+        print("  cuberoot n — cube root of perfect cube")
+        print("  last_n num n — last n digits (remainder by 10^n)")
+        print("  sin x — sine approximation")
+        print("  verify_div div dvs q r — verify division via digit sums")
+        print("  cubic a b — solve x³ + a x = b")
         print("\nDemo:")
+        print("  cuberoot 405224 =", vedic_process("cuberoot", 405224))
+        print("  last_n 123456 3 =", vedic_process("last_n", 123456, 3))
+        print("  sin 0.5 =", vedic_process("sin", 0.5))
+        print("  verify_div 12345 98 125 95 =", vedic_process("verify_div", 12345, 98, 125, 95))
+        print("  cubic 6 20 =", vedic_process("cubic", 6, 20))
         print("  sum_n 5 =", vedic_process("sum_n", 5))
         print("  recur_frac 0 142857 =", vedic_process("recur_frac", 0, "142857"))
         print("  murti 43 63 =", vedic_process("murti", 43, 63))
