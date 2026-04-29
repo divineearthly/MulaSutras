@@ -5,9 +5,8 @@
 
 /**
  * Urdhva Tiryagbhyam – Vertically and Crosswise
- * Multiplies two arbitrary-length non-negative integers.
- * Uses parallel map-reduce (OpenMP) for digit products.
- * Returns a newly allocated string; caller must free with free_urdhva_string().
+ * Parallel, iterative grid multiplier. Handles any length.
+ * Returns a newly allocated string; free with free_urdhva_string().
  */
 char* urdhva_multiply_c(const char* a_str, const char* b_str) {
     int len_a = (int)strlen(a_str);
@@ -19,16 +18,16 @@ char* urdhva_multiply_c(const char* a_str, const char* b_str) {
     int* result = (int*)calloc(len_res, sizeof(int));
     if (!result) return NULL;
 
-    // Get number of threads
+    // Get the number of available threads
     int num_threads = omp_get_max_threads();
 
-    // Per-thread local results to avoid atomic/synchronization overhead
-    int** local_result = (int**)malloc(num_threads * sizeof(int*));
+    // Per-thread local arrays to avoid atomic operations
+    int** local = (int**)malloc(num_threads * sizeof(int*));
     for (int t = 0; t < num_threads; t++) {
-        local_result[t] = (int*)calloc(len_res, sizeof(int));
+        local[t] = (int*)calloc(len_res, sizeof(int));
     }
 
-    // Parallel region: each thread writes to its own local_result[tid]
+    // Parallel region: each thread accumulates into its own local array
     #pragma omp parallel
     {
         int tid = omp_get_thread_num();
@@ -37,7 +36,7 @@ char* urdhva_multiply_c(const char* a_str, const char* b_str) {
             for (int j = 0; j < len_b; j++) {
                 int da = a_str[len_a - 1 - i] - '0';
                 int db = b_str[len_b - 1 - j] - '0';
-                local_result[tid][i + j] += da * db;
+                local[tid][i + j] += da * db;
             }
         }
     }
@@ -45,19 +44,19 @@ char* urdhva_multiply_c(const char* a_str, const char* b_str) {
     // Merge all thread-local arrays into the main result array
     for (int t = 0; t < num_threads; t++) {
         for (int i = 0; i < len_res; i++) {
-            result[i] += local_result[t][i];
+            result[i] += local[t][i];
         }
-        free(local_result[t]);
+        free(local[t]);
     }
-    free(local_result);
+    free(local);
 
-    // Sequential carry propagation (cannot be parallelized easily)
+    // Single-threaded carry propagation
     for (int i = 0; i < len_res - 1; i++) {
         result[i + 1] += result[i] / 10;
         result[i] %= 10;
     }
 
-    // Find actual length (skip leading zeros)
+    // Remove leading zeros
     int actual_len = len_res;
     while (actual_len > 1 && result[actual_len - 1] == 0) actual_len--;
 
