@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <omp.h>
 
 /**
  * Urdhva Tiryagbhyam – Vertically and Crosswise
  * Multiplies two arbitrary-length non-negative integers.
- * Returns a newly allocated string. The caller must free it.
+ * Uses parallel map-reduce (OpenMP) for digit products.
+ * Returns a newly allocated string; caller must free with free_urdhva_string().
  */
 char* urdhva_multiply_c(const char* a_str, const char* b_str) {
     int len_a = (int)strlen(a_str);
@@ -17,20 +19,49 @@ char* urdhva_multiply_c(const char* a_str, const char* b_str) {
     int* result = (int*)calloc(len_res, sizeof(int));
     if (!result) return NULL;
 
-    for (int i = 0; i < len_a; i++) {
-        for (int j = 0; j < len_b; j++) {
-            int da = a_str[len_a - 1 - i] - '0';
-            int db = b_str[len_b - 1 - j] - '0';
-            result[i + j] += da * db;
-            result[i + j + 1] += result[i + j] / 10;
-            result[i + j] %= 10;
+    // Get number of threads
+    int num_threads = omp_get_max_threads();
+
+    // Per-thread local results to avoid atomic/synchronization overhead
+    int** local_result = (int**)malloc(num_threads * sizeof(int*));
+    for (int t = 0; t < num_threads; t++) {
+        local_result[t] = (int*)calloc(len_res, sizeof(int));
+    }
+
+    // Parallel region: each thread writes to its own local_result[tid]
+    #pragma omp parallel
+    {
+        int tid = omp_get_thread_num();
+        #pragma omp for collapse(2)
+        for (int i = 0; i < len_a; i++) {
+            for (int j = 0; j < len_b; j++) {
+                int da = a_str[len_a - 1 - i] - '0';
+                int db = b_str[len_b - 1 - j] - '0';
+                local_result[tid][i + j] += da * db;
+            }
         }
+    }
+
+    // Merge all thread-local arrays into the main result array
+    for (int t = 0; t < num_threads; t++) {
+        for (int i = 0; i < len_res; i++) {
+            result[i] += local_result[t][i];
+        }
+        free(local_result[t]);
+    }
+    free(local_result);
+
+    // Sequential carry propagation (cannot be parallelized easily)
+    for (int i = 0; i < len_res - 1; i++) {
+        result[i + 1] += result[i] / 10;
+        result[i] %= 10;
     }
 
     // Find actual length (skip leading zeros)
     int actual_len = len_res;
     while (actual_len > 1 && result[actual_len - 1] == 0) actual_len--;
 
+    // Convert to string
     char* out = (char*)malloc(actual_len + 1);
     if (!out) {
         free(result);
@@ -44,16 +75,9 @@ char* urdhva_multiply_c(const char* a_str, const char* b_str) {
     return out;
 }
 
-/*
-// For standalone testing (optional):
-int main() {
-    char* product = urdhva_multiply_c("123", "456");
-    printf("%s\n", product);
-    free(product);
-    return 0;
-}
-*/
-// Add this after the urdhva_multiply_c definition
+/**
+ * Free a string allocated by urdhva_multiply_c.
+ */
 void free_urdhva_string(char* str) {
     free(str);
 }
