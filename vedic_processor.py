@@ -5,6 +5,11 @@ Supports: mul, div, square, sqrt, mul9, verify, predict, compress,
           solve2, solve_lin, quadratic, derivative, factor, solve3, proportion
 """
 
+from ekadhikena_series import sum_of_naturals, sum_of_squares, sum_of_cubes
+from recurring_fraction import recurring_to_fraction
+from murti_gunaka import murti_multiply
+from antyayor import antyayor_multiply
+from vyasti_samasti import triangle_area
 from urdhva_tiryagbhyam import urdhva_multiply
 from nikhilam import nikhilam_multiply
 from anurupyena import anurupyena_multiply
@@ -87,6 +92,20 @@ def vedic_process(operation, *args):
         return lopana_solve(eq1, eq2, eq3)
     elif operation == "proportion":
         return proportion_solve(*args)
+    elif operation == "sum_n":
+        return sum_of_naturals(args[0])
+    elif operation == "sum_sq":
+        return sum_of_squares(args[0])
+    elif operation == "sum_cu":
+        return sum_of_cubes(args[0])
+    elif operation == "recur_frac":
+        return recurring_to_fraction(args[0], args[1])
+    elif operation == "murti":
+        return murti_multiply(args[0], args[1])
+    elif operation == "antyayor":
+        return antyayor_multiply(args[0], args[1])
+    elif operation == "tri_area":
+        return triangle_area(args[0], args[1], args[2])
     else:
         raise ValueError(f"Unknown operation: {operation}")
 
@@ -99,7 +118,16 @@ if __name__ == "__main__":
         print("  solve2 sum diff, solve_lin a1 b1 c1 a2 b2 c2")
         print("  quadratic a b c, derivative c1 c2 ..., factor b c")
         print("  solve3 a1 b1 c1 d1 ... a3 b3 c3 d3, proportion a b c d (?=missing)")
+        print("  sum_n n, sum_sq n, sum_cu n — sum of naturals, squares, cubes")
+        print("  recur_frac i rep — recurring decimal to fraction")
+        print("  murti a b, antyayor a b — special Vedic multiplications")
+        print("  tri_area a b c — triangle area")
         print("\nDemo:")
+        print("  sum_n 5 =", vedic_process("sum_n", 5))
+        print("  recur_frac 0 142857 =", vedic_process("recur_frac", 0, "142857"))
+        print("  murti 43 63 =", vedic_process("murti", 43, 63))
+        print("  antyayor 37 33 =", vedic_process("antyayor", 37, 33))
+        print("  tri_area 3 4 5 =", vedic_process("tri_area", 3, 4, 5))
         print("  98*97 =", vedic_process("mul", 98, 97))
         print("  12345/98 =", vedic_process("div", 12345, 98))
         print("  96² =", vedic_process("square", 96))
