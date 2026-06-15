@@ -21,29 +21,15 @@ jobs:
       uses: android-actions/setup-android@v3
 
     - name: Install NDK Component Natively
-      run: |
-        sdkmanager --install "ndk;26.1.10909125"
+      run: sdkmanager --install "ndk;26.1.10909125"
 
     - name: Cross-Compile Standalone Static Llama Binary
       run: |
-        echo "=== INITIALIZING REMOTE CROSS-COMPILATION FOR ARM64 ==="
         export ANDROID_NDK=$ANDROID_HOME/ndk/26.1.10909125
-        
         git clone https://github.com/ggerganov/llama.cpp.git cloud-llama-source
         cd cloud-llama-source
         mkdir build && cd build
-        
-        cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
-              -DANDROID_ABI=arm64-v8a \
-              -DANDROID_PLATFORM=android-24 \
-              -DBUILD_SHARED_LIBS=OFF \
-              -DCMAKE_BUILD_TYPE=Release \
-              -DLLAMA_BUILD_TESTS=OFF \
-              -DLLAMA_BUILD_EXAMPLES=ON \
-              -DLLAMA_BUILD_SERVER=OFF \
-              -GNinja ..
-              
-        # target updated to the fresh system naming convention
+        cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake               -DANDROID_ABI=arm64-v8a               -DANDROID_PLATFORM=android-24               -DBUILD_SHARED_LIBS=OFF               -DCMAKE_BUILD_TYPE=Release               -DLLAMA_BUILD_TESTS=OFF               -DLLAMA_BUILD_EXAMPLES=ON               -DLLAMA_BUILD_SERVER=OFF               -GNinja ..
         ninja llama-app
 
     - name: Upload Compiled Static Executable Artifact
