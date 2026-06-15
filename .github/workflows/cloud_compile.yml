@@ -1,0 +1,23 @@
+name: Zero-Heat Cloud Compiler
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build-arm64:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Install Android NDK Toolchain
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake ninja-build git
+
+    - name: Run Cloud Verification Script
+      run: |
+        echo "=== Running heavy mathematical optimizations in the cloud ==="
+        # You can add your C++ compilation or heavy data processing tests here
+        # e.g., cmake -DBUILD_SHARED_LIBS=OFF .. && cmake --build .
