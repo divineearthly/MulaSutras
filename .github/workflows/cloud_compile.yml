@@ -1,4 +1,4 @@
-name: ZeroHeat Cloud Compiler
+name: Zero-Heat Cloud Compiler
 
 on:
   push:
@@ -14,13 +14,13 @@ jobs:
     - name: Setup Java Environment
       uses: actions/setup-java@v4
       with:
-        distribution: "zulu"
-        java-version: "17"
+        distribution: 'zulu'
+        java-version: '17'
 
     - name: Set up Android SDK & NDK
       uses: android-actions/setup-android@v3
 
-     - name: Install NDK Component Natively
+    - name: Install NDK Component Natively
       run: sdkmanager --install "ndk;26.1.10909125"
 
     - name: Cross-Compile Standalone Static Llama Binary
@@ -35,7 +35,7 @@ jobs:
               -DBUILD_SHARED_LIBS=OFF \
               -DCMAKE_BUILD_TYPE=Release \
               -DLLAMA_BUILD_TESTS=OFF \
-              -DLLAMA_BUILD_EXAMPLES=ONF \
+              -DLLAMA_BUILD_EXAMPLES=ON \
               -DLLAMA_BUILD_SERVER=OFF \
               -GNinja ..
         ninja llama-app
