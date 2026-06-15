@@ -14,8 +14,8 @@ jobs:
     - name: Setup Java Environment
       uses: actions/setup-java@v4
       with:
-        distribution: 'zulu'
-        java-version: '17'
+        distribution: "zulu"
+        java-version: "17"
 
     - name: Set up Android SDK & NDK
       uses: android-actions/setup-android@v3
@@ -43,10 +43,11 @@ jobs:
               -DLLAMA_BUILD_SERVER=OFF \
               -GNinja ..
               
-        ninja llama-cli
+        # target updated to the fresh system naming convention
+        ninja llama-app
 
     - name: Upload Compiled Static Executable Artifact
       uses: actions/upload-artifact@v4
       with:
         name: static-llama-cli-arm64
-        path: cloud-llama-source/build/bin/llama-cli
+        path: cloud-llama-source/build/bin/llama-app
