@@ -33,7 +33,6 @@ jobs:
         cd cloud-llama-source
         mkdir build && cd build
         
-        # We explicitly turn off auxiliary modules and tests to bypass the spawn.h limitations
         cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
               -DANDROID_ABI=arm64-v8a \
               -DANDROID_PLATFORM=android-24 \
@@ -44,7 +43,6 @@ jobs:
               -DLLAMA_BUILD_SERVER=OFF \
               -GNinja ..
               
-        # Isolate the compilation target directly to the primary core client executable
         ninja llama-cli
 
     - name: Upload Compiled Static Executable Artifact
